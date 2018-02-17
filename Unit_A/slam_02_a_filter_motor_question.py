@@ -13,13 +13,23 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width):
     if motor_ticks[0] == motor_ticks[1]:
         # No turn. Just drive straight.
 
-        # --->>> Implement your code to compute x, y, theta here.
+        theta = old_pose[2]
+        x = old_pose[0] + motor_ticks[0] * ticks_to_mm * cos(theta)
+        y = old_pose[1] + motor_ticks[0] * ticks_to_mm * sin(theta)
+
         return (x, y, theta)
 
     else:
         # Turn. Compute alpha, R, etc.
 
-        # --->>> Implement your code to compute x, y, theta here.
+        alpha = (motor_ticks[1] * ticks_to_mm - motor_ticks[0] * ticks_to_mm) / robot_width
+        R = motor_ticks[0] * ticks_to_mm / alpha
+        cx = old_pose[0] - (R + robot_width / 2) * sin(old_pose[2])
+        cy = old_pose[1] - (R + robot_width / 2) * (-cos(old_pose[2]))
+        theta = (old_pose[2] + alpha) % (2 * pi)
+        x = cx + (R + robot_width / 2) * sin(theta)
+        y = cy + (R + robot_width / 2) * (-cos(theta))
+        
         return (x, y, theta)
 
 if __name__ == '__main__':
@@ -44,6 +54,6 @@ if __name__ == '__main__':
 
     # Draw result.
     for pose in filtered:
-        print pose
+        print(pose)
         plot([p[0] for p in filtered], [p[1] for p in filtered], 'bo')
     show()

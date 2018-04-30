@@ -21,6 +21,10 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width,
         # --->>> Use your previous implementation.
         # Think about if you need to modify your old code due to the
         # scanner displacement?
+
+        theta = old_pose[2]
+        x = old_pose[0] + motor_ticks[0] * ticks_to_mm * cos(theta)
+        y = old_pose[1] + motor_ticks[0] * ticks_to_mm * sin(theta)
         
         return (x, y, theta)
 
@@ -34,6 +38,20 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width,
         #   for the center of the robot.
         # Third, modify the result to get back the LiDAR pose from
         #   your computed center. This is the value you have to return.
+
+        old_x = old_pose[0] - scanner_displacement * cos(old_pose[2])
+        old_y = old_pose[1] - scanner_displacement * sin(old_pose[2])
+
+        alpha = (motor_ticks[1] * ticks_to_mm - motor_ticks[0] * ticks_to_mm) / robot_width
+        R = motor_ticks[0] * ticks_to_mm / alpha
+        cx = old_x - (R + robot_width / 2) * sin(old_pose[2])
+        cy = old_y - (R + robot_width / 2) * (-cos(old_pose[2]))
+        theta = (old_pose[2] + alpha) % (2 * pi)
+        x = cx + (R + robot_width / 2) * sin(theta)
+        y = cy + (R + robot_width / 2) * (-cos(theta))
+
+        x += scanner_displacement * cos(theta)
+        y += scanner_displacement * sin(theta)
 
         return (x, y, theta)
 
@@ -65,5 +83,5 @@ if __name__ == '__main__':
     # Write all filtered positions to file.
     f = open("poses_from_ticks.txt", "w")
     for pose in filtered:
-        print >> f, "F %f %f %f" % pose
+        print("F %f %f %f" % pose, file = f)
     f.close()

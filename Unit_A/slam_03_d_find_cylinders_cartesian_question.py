@@ -29,6 +29,28 @@ def find_cylinders(scan, scan_derivative, jump, min_dist):
 
     # --->>> Insert here your previous solution from find_cylinders_question.py.
 
+    for i in range(len(scan_derivative)):
+        # --->>> Insert your cylinder code here.
+        # Whenever you find a cylinder, add a tuple
+        # (average_ray, average_depth) to the cylinder_list.
+
+        if scan_derivative[i] < -jump:
+            on_cylinder = True
+            if scan[i] > min_dist:
+                sum_ray, sum_depth, rays = i, scan[i], 1
+            else:
+                sum_ray, sum_depth, rays = 0.0, 0.0, 0
+
+        elif scan_derivative[i] > jump and on_cylinder:
+            cylinder_list.append((sum_ray / rays, sum_depth / rays))
+            on_cylinder = False
+
+        elif on_cylinder:
+            if scan[i] > min_dist:
+                sum_ray += i
+                sum_depth += scan[i]
+                rays += 1
+
     return cylinder_list
 
 def compute_cartesian_coordinates(cylinders, cylinder_offset):
@@ -38,7 +60,12 @@ def compute_cartesian_coordinates(cylinders, cylinder_offset):
         # c is a tuple (beam_index, range).
         # For converting the beam index to an angle, use
         # LegoLogfile.beam_index_to_angle(beam_index)
-        result.append( (0,0) ) # Replace this by your (x,y)
+
+        angle = LegoLogfile.beam_index_to_angle(c[0])
+        r = c[1] + cylinder_offset
+
+        result.append((r * cos(angle), r * sin(angle)))
+        # result.append( (0,0) ) # Replace this by your (x,y)
     return result
         
 

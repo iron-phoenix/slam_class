@@ -1,7 +1,7 @@
 # Python routines to inspect a ikg LEGO robot logfile.
 # Author: Claus Brenner, 28.10.2012
-from tkinter import *
-from tkinter import filedialog
+from Tkinter import *
+import tkFileDialog
 from lego_robot import *
 from math import sin, cos, pi
 
@@ -184,7 +184,7 @@ def slider_moved(index):
     info.config(text=logfile.info(i))
 
 def add_file():
-    filename = filedialog.askopenfilename(filetypes = [("all files", ".*"), ("txt files", ".txt")])
+    filename = tkFileDialog.askopenfilename(filetypes = [("all files", ".*"), ("txt files", ".txt")])
     if filename and filename not in all_file_names:
         all_file_names.append(filename)
         load_data()
@@ -230,7 +230,7 @@ def load_data():
     if logfile.detected_cylinders and logfile.filtered_positions and \
         len(logfile.filtered_positions[0]) > 2:
         positions = []
-        for i in range(min(len(logfile.detected_cylinders), len(logfile.filtered_positions))):
+        for i in xrange(min(len(logfile.detected_cylinders), len(logfile.filtered_positions))):
             this_pose_positions = []
             pos = logfile.filtered_positions[i]
             dx = cos(pos[2])
@@ -276,7 +276,6 @@ if __name__ == '__main__':
     reload_all.pack(side=RIGHT)
 
     # The list of objects to draw.
-    # The list of objects to draw.
     draw_objects = []
 
     # Ask for file.
@@ -284,3 +283,4 @@ if __name__ == '__main__':
     add_file()
 
     root.mainloop()
+    root.destroy()
